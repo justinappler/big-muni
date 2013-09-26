@@ -37,7 +37,7 @@ Justin Appler: [@justinappler][twitter] [LinkedIn][linkedin]
 Licensed under [MIT][mit].
 
 [linkedin]: http://www.linkedin.com/in/justinappler
-[demo]: http://big-muni.herokuapp.com/
+[demo]: http://app-15074f20-0033-419e-9a46-0dca922442e0.cleverapps.io/ 
 [twitter]: http://twitter.com/justinappler
 [mit]: http://www.opensource.org/licenses/mit-license.php
 [play2]: http://www.playframework.com
