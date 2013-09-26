@@ -25,6 +25,9 @@ With the [Play 2.2 Framework][play2] installed,
 play run
 ```
 
+## Demo
+[Demo][demo]
+
 ## Author
 
 Justin Appler: [@justinappler][twitter]
@@ -33,6 +36,7 @@ Justin Appler: [@justinappler][twitter]
 
 Licensed under [MIT][mit].
 
+[demo]: http://big-muni.herokuapp.com/
 [twitter]: http://twitter.com/justinappler
 [mit]: http://www.opensource.org/licenses/mit-license.php
 [play2]: http://www.playframework.com
