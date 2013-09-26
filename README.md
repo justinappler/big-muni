@@ -30,12 +30,13 @@ play run
 
 ## Author
 
-Justin Appler: [@justinappler][twitter]
+Justin Appler: [@justinappler][twitter] [LinkedIn][linkedin]
 
 ## License
 
 Licensed under [MIT][mit].
 
+[linkedin]: http://www.linkedin.com/in/justinappler
 [demo]: http://big-muni.herokuapp.com/
 [twitter]: http://twitter.com/justinappler
 [mit]: http://www.opensource.org/licenses/mit-license.php
