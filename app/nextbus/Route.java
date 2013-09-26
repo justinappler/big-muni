@@ -2,58 +2,103 @@ package nextbus;
 
 import java.util.List;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Route {
 
-    @JacksonXmlProperty(isAttribute=true)
+    @XmlAttribute
     public String tag;
     
-    @JacksonXmlProperty(isAttribute=true)
+    @XmlAttribute
     public String title;
 
-    @JacksonXmlProperty(isAttribute=true)
+    @XmlAttribute
     public String color;
     
-    @JacksonXmlProperty(isAttribute=true)
+    @XmlAttribute
     public String oppositeColor;
     
-    @JacksonXmlProperty(isAttribute=true)
+    @XmlAttribute
     public String shortTitle;
 
-    @JacksonXmlProperty(isAttribute=true)
+    @XmlAttribute
     public String latMin;
 
-    @JacksonXmlProperty(isAttribute=true)
+    @XmlAttribute
     public String latMax;
 
-    @JacksonXmlProperty(isAttribute=true)
+    @XmlAttribute
     public String lonMin;
 
-    @JacksonXmlProperty(isAttribute=true)
+    @XmlAttribute
     public String lonMax;
     
-    @JacksonXmlElementWrapper(useWrapping=false)
-    public List<Stop> stop;
+    @XmlElement(name="direction")
+    public List<Route.Direction> directions;
     
-    @JacksonXmlElementWrapper(useWrapping=false)
-    public List<Direction> direction;
+    @XmlElement(name="stop")
+    public List<Route.Stop> stops;
     
+    @XmlRootElement(name="direction")
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class Direction {
-        @JacksonXmlProperty(isAttribute=true)
+        @XmlAttribute
         public String tag;
         
-        @JacksonXmlProperty(isAttribute=true)
+        @XmlAttribute
         public String title;
 
-        @JacksonXmlProperty(isAttribute=true)
+        @XmlAttribute
         public String name;
         
-        @JacksonXmlProperty(isAttribute=true)
+        @XmlAttribute
         public Boolean useForUI;
         
-        @JacksonXmlElementWrapper(useWrapping=false)
+        @XmlElement
         public List<Stop> stop;
+    }
+    
+    @XmlRootElement(name="stop")
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class Stop {
+        @XmlAttribute
+        public String tag;
+
+        @XmlAttribute
+        public String title;
+        
+        @XmlAttribute
+        public String shortTitle;
+        
+        @XmlAttribute
+        public double lat;
+        
+        @XmlAttribute
+        public double lon;
+        
+        @XmlAttribute
+        public Integer stopId;
+    }
+    
+
+    @Override
+    public int hashCode() {
+        return tag.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        
+        if (!(obj instanceof Route))
+            return false;
+        
+        return tag.equals(((Route) obj).tag);
     }
 }

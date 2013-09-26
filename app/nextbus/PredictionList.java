@@ -7,10 +7,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="body")
+@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class RouteList {
-
-    @XmlElement
-    public List<Route> route;
+public class PredictionList {
+    
+    @XmlElement(name="direction")
+    public List<Direction> directions;
 }

@@ -17,6 +17,49 @@ $(function() {
    
    var map = new google.maps.Map(document.getElementById("map"), mapParams);
 
+   function addStops(stopData) {
+      $('#loading').remove();
+      
+      var routes = stopData["routes"];
+      
+      var routeId = 0;
+      for (var i = 0; i < routes.length; i++) {
+         var contentBox = document.createElement("div");
+         $(contentBox).addClass("content-box");
+         
+         var heading = document.createElement("h2");
+         heading.innerHTML = routes[i]["routeName"];
+         contentBox.appendChild(heading);
+         
+         var stops = routes[i]["stops"];
+         
+         for (var j = 0; j < stops.length; j++) {
+            var stopTitle = document.createElement("h3");
+            stopTitle.innerHTML = stops[j]["stopName"];
+            contentBox.appendChild(stopTitle);
+            
+            var predictions = stops[j]["predictions"];
+            for (var k = 0; k < predictions.length; k++) {
+               var prediction = document.createElement("span");
+               prediction.innerHTML = predictions[k];
+               contentBox.appendChild(prediction);
+            }
+         }
+         
+         $("#container").append(contentBox);
+      }
+   }
+   
+   function updateStops(latitude, longitude) {
+      $.ajax({
+         type: "POST",
+         url: "/stops",
+         contentType: 'application/json',
+         dataType: 'json',
+         data: JSON.stringify({lat: latitude, lon: longitude})
+       }).done(addStops);
+   }
+   
    // Let's start by trying to get the position using the HTML GeoLocation API   
    function getLocation(position) {
       var latitude = position.coords.latitude;
@@ -32,9 +75,12 @@ $(function() {
          map: map,
          title:"My Location"
      });
+      
+     updateStops(latitude, longitude);
    }
    
    navigator.geolocation.getCurrentPosition(getLocation);
+   
    
    
 })

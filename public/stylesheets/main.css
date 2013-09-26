@@ -97,19 +97,23 @@ table {
    -moz-border-radius: 20px;
    border-radius: 20px;
    background-color: rgba(0,0,0,.9);
-   max-width: 350px;
+   width: 350px;
    min-height: 200px;
    padding: 20px;
    margin: 20px;
 }
 
-h2,p {
-   font-family: 'Helvetica Neue', 'Questrial', sans-serif;
+h2,h3,span {
+   font-family: 'Helvetica Neue Light', 'Questrial', sans-serif;
    color: white;
 }
 
+h2#loading {
+   font-size: 36px;    
+}
+
 h2 {
-   font-size: 72px;
+   font-size: 24px;
    font-weight: bold;
 }
 
