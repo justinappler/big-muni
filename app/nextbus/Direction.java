@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
 public class Direction {
     @XmlAttribute
     public String title;
-    
+
     @XmlElement
-    public List<Predictions> predictions;
+    public List<Prediction> prediction;
 }

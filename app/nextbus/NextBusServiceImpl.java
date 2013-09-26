@@ -179,16 +179,16 @@ public class NextBusServiceImpl implements NextBusService {
     private List<Integer> getPredictionsForStop(PredictionList predictionList, Route route, Stop stop) {
         List<Integer> minuteList = new ArrayList<Integer>();
         
-        if (predictionList.directions == null)
+        if (predictionList.predictions == null)
             return minuteList;
         
-        for (Direction direction : predictionList.directions) {
-            for (Predictions predictions : direction.predictions) {
-                for (Prediction prediction : predictions.prediction) {
-                    if (predictions.routeCode.equals(route.tag) &&
-                            predictions.stopTitle.equals(stop.title)) {
-                        minuteList.add(prediction.minutes);
-                    }
+        for (Predictions predictions : predictionList.predictions) {
+            if (predictions.direction != null && predictions.direction.prediction != null) {
+                for (Prediction prediction : predictions.direction.prediction) {
+                        if (predictions.routeTag.equals(route.tag) &&
+                                predictions.stopTag.equals(stop.tag)) {
+                            minuteList.add(prediction.minutes);
+                        }
                 }
             }
         }

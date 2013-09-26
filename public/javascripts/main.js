@@ -42,14 +42,15 @@ $(function() {
             var predictions = stops[j]["predictions"];
             for (var k = 0; k < predictions.length; k++) {
                var prediction = document.createElement("span");
-               prediction.innerHTML = predictions[k];
+               prediction.innerHTML = predictions[k] + ((predictions[k] > 1) ? " mins" : " min");
                contentBox.appendChild(prediction);
             }
             
-            // Temporary test text
-            var prediction = document.createElement("span");
-            prediction.innerHTML = "No predictions";
-            contentBox.appendChild(prediction);
+            if (predictions.length < 1) {
+               var prediction = document.createElement("span");
+               prediction.innerHTML = "No predictions";
+               contentBox.appendChild(prediction);
+            }
          }
          
          $("#container").append(contentBox);

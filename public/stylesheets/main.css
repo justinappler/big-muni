@@ -105,8 +105,9 @@ table {
 
 .content-box span {
    font-size: 16px;
-   color: #999;
+   color: #AAA;
    text-align: right;
+   margin-left: 10px;
 }
 
 h1,h2,h3,span {

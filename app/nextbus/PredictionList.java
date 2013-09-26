@@ -11,6 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PredictionList {
     
-    @XmlElement(name="direction")
-    public List<Direction> directions;
+    @XmlElement(name="predictions")
+    public List<Predictions> predictions;
 }
