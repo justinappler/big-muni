@@ -132,9 +132,7 @@ public class NextBusServiceImpl implements NextBusService {
         }
         
         Promise<Response> predictionResponse = predictionRequest.get();
-
         String predictionXml = predictionResponse.get(10000).getBody();
-        
         PredictionList predictionList = JAXB.unmarshal(new StringReader(predictionXml), PredictionList.class);
 
         return predictionList;

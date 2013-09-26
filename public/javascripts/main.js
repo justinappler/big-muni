@@ -17,6 +17,7 @@ $(function() {
    
    var map = new google.maps.Map(document.getElementById("map"), mapParams);
 
+   // Add the stop data to the UI
    function addStops(stopData) {
       $('#loading').remove();
       
@@ -44,12 +45,18 @@ $(function() {
                prediction.innerHTML = predictions[k];
                contentBox.appendChild(prediction);
             }
+            
+            // Temporary test text
+            var prediction = document.createElement("span");
+            prediction.innerHTML = "No predictions";
+            contentBox.appendChild(prediction);
          }
          
          $("#container").append(contentBox);
       }
    }
    
+   // Call the JSON stops service
    function updateStops(latitude, longitude) {
       $.ajax({
          type: "POST",
@@ -80,7 +87,4 @@ $(function() {
    }
    
    navigator.geolocation.getCurrentPosition(getLocation);
-   
-   
-   
 })
