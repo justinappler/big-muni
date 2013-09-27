@@ -2,6 +2,10 @@ package nextbus;
 
 import models.StopsModel;
 
+/**
+ * NextBus service interface
+ * @author justinappler
+ */
 public interface NextBusService {
 
     /**
@@ -9,8 +13,7 @@ public interface NextBusService {
      * 
      * @param latitude
      * @param longitude
-     * @param distance
-     * @return
+     * @return nearby stops and their predictions
      */
     public StopsModel getStops(double latitude, double longitude);
 }

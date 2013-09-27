@@ -1,7 +1,19 @@
 package util;
 
+/**
+ * Utility class for Geographic methods
+ * @author justinappler
+ */
 public class GeoUtil {
     
+    /**
+     * Calculates the distance between two geographic points
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @return the distance between the two points in kilometers
+     */
     public static double distanceInKilometers(double lat1, double lon1, double lat2, double lon2) {
         double earthRadius = 6371.0;
         double dLat = degreesToRadians(lat2-lat1);

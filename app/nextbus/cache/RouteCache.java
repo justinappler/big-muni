@@ -1,4 +1,4 @@
-package nextbus;
+package nextbus.cache;
 
 import java.io.IOException;
 import java.nio.file.DirectoryIteratorException;
@@ -11,6 +11,16 @@ import java.util.List;
 
 import javax.xml.bind.JAXB;
 
+import nextbus.api.Route;
+
+/**
+ * Cache for routes retrieved from the NextBus API.
+ * 
+ * Will save all route data as XML to a 'route-cache' directory
+ * and will attempt to load from that directory on request.
+ * 
+ * @author justinappler
+ */
 public class RouteCache {
     
     private static RouteCache instance;
@@ -18,7 +28,11 @@ public class RouteCache {
     
     private static final String CACHE_DIR = "route-cache";
 
-    private static RouteCache getInstance() {
+    static {
+        getInstance();
+    }
+    
+    private synchronized static RouteCache getInstance() {
         if (instance == null) {
             instance = new RouteCache();
         }
@@ -30,6 +44,10 @@ public class RouteCache {
         load();
     }
     
+    /**
+     * Populates a list of routes from XML in the route-cache
+     * directory
+     */
     private void load() {
         routes = new ArrayList<Route>();
         
@@ -49,6 +67,10 @@ public class RouteCache {
             routes = null;
     }
 
+    /**
+     * Caches a list of routes as XML files
+     * @param routesToCache
+     */
     public static void cache(List<Route> routesToCache) {
         getInstance()._cache(routesToCache);
         
@@ -77,6 +99,10 @@ public class RouteCache {
         }
     }
 
+    /**
+     * Get a list of all cached routes
+     * @return all cached routes, or null if there are no routes cached
+     */
     public static List<Route> getRoutes() {
         return getInstance()._getRoutes();
     }

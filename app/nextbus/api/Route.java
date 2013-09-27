@@ -1,4 +1,4 @@
-package nextbus;
+package nextbus.api;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class Route {
     public List<Route.Direction> directions;
     
     @XmlElement(name="stop")
-    public List<Route.Stop> stops;
+    public List<Stop> stops;
     
     @XmlRootElement(name="direction")
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -62,29 +62,6 @@ public class Route {
         @XmlElement
         public List<Stop> stop;
     }
-    
-    @XmlRootElement(name="stop")
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class Stop {
-        @XmlAttribute
-        public String tag;
-
-        @XmlAttribute
-        public String title;
-        
-        @XmlAttribute
-        public String shortTitle;
-        
-        @XmlAttribute
-        public double lat;
-        
-        @XmlAttribute
-        public double lon;
-        
-        @XmlAttribute
-        public Integer stopId;
-    }
-    
 
     @Override
     public int hashCode() {

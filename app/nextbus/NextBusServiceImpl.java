@@ -2,16 +2,18 @@ package nextbus;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.xml.bind.JAXB;
 
 import models.StopsModel;
-import nextbus.Route.Stop;
+import nextbus.api.PredictionList;
+import nextbus.api.Route;
+import nextbus.api.RouteList;
+import nextbus.api.Stop;
+import nextbus.cache.RouteCache;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -22,9 +24,17 @@ import play.libs.WS.Response;
 import play.libs.WS.WSRequestHolder;
 import util.GeoUtil;
 
+/**
+ * Implementation of the Nextbus Service
+ * @author justinappler
+ */
 public class NextBusServiceImpl implements NextBusService {
 
+    private static NextBusServiceImpl instance;
+    
     private List<Route> allRoutes;
+    
+    private AtomicBoolean isLoaded;
         
     private static final String NEXTBUS_PUBLIC_XML_FEED = "http://webservices.nextbus.com/service/publicXMLFeed";
     
@@ -40,8 +50,21 @@ public class NextBusServiceImpl implements NextBusService {
 
     private static final double NEARBY = 0.25; // .45KM or ~2 City Blocks
     
+    static {
+        getInstance();
+    }
     
-    public NextBusServiceImpl() {        
+    public  synchronized static NextBusService getInstance() {
+        if (instance == null) {
+            instance = new NextBusServiceImpl();
+        }
+        
+        return instance;
+    }
+    
+    private NextBusServiceImpl() { 
+        isLoaded = new AtomicBoolean(false);
+        
         allRoutes = RouteCache.getRoutes();
         if (allRoutes == null) {
             allRoutes = new ArrayList<Route>();
@@ -50,9 +73,21 @@ public class NextBusServiceImpl implements NextBusService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else {
+            isLoaded.set(true);
         }
     }
     
+    /**
+     * Gets a list of all routes served and then, one at a 
+     * time, gets the route configuration for each of the routes.
+     * 
+     * Caches all routes when finished as local XML files. This
+     * method should ideally be run very infrequently as it 
+     * makes many calls to the Nextbus API.
+     * 
+     * @throws Exception
+     */
     private void populateRouteList() throws Exception {
         Promise<Response> routeListResponse = WS
                 .url(NEXTBUS_PUBLIC_XML_FEED)
@@ -83,6 +118,7 @@ public class NextBusServiceImpl implements NextBusService {
     private void populateRoutes(final LinkedList<Route> routeNames) {
         if (routeNames.isEmpty()) {
             RouteCache.cache(allRoutes);
+            isLoaded.set(true);
         } else {
             Route nextRoute = routeNames.pop();
             
@@ -109,10 +145,19 @@ public class NextBusServiceImpl implements NextBusService {
         }
     }
 
-    public List<Pair<Route.Stop,Route>> getNearbyStops(double latitude, double longitude, double distance) {
-        List<Pair<Route.Stop,Route>> stops = new ArrayList<Pair<Route.Stop,Route>>();
+    /**
+     * Given a location and distance (or radius), returns
+     * all nearby stops and their corresponding routes
+     * 
+     * @param latitude
+     * @param longitude
+     * @param distance radius in kilometers
+     * @return
+     */
+    public List<Pair<Stop,Route>> getNearbyStops(double latitude, double longitude, double distance) {
+        List<Pair<Stop,Route>> stops = new ArrayList<Pair<Stop,Route>>();
         for (Route route : allRoutes) {
-            for (Route.Stop stop : route.stops) {
+            for (Stop stop : route.stops) {
                 double stopDistance = GeoUtil.distanceInKilometers(latitude, longitude, stop.lat, stop.lon);
                 if (stopDistance < distance)
                     stops.add(Pair.of(stop, route));
@@ -121,13 +166,18 @@ public class NextBusServiceImpl implements NextBusService {
         return stops;
     }
 
-    public PredictionList getPredictionListsForRoutes(List<Pair<Route.Stop,Route>> stops) {
+    /**
+     * Gets a list of predictions for a list of stops
+     * @param stops
+     * @return
+     */
+    public PredictionList getPredictionListsForRoutes(List<Pair<Stop,Route>> stops) {
         WSRequestHolder predictionRequest = WS
                 .url(NEXTBUS_PUBLIC_XML_FEED)
                 .setQueryParameter(COMMAND, PREDICT_MULTIPLE_STOPS_COMMAND)
                 .setQueryParameter(AGENCY, SF_MUNI_AGENCY);
         
-        for (Pair<Route.Stop,Route> stop : stops) {
+        for (Pair<Stop,Route> stop : stops) {
             predictionRequest.setQueryParameter(STOPS, stop.getRight().tag + "|" + stop.getLeft().tag);
         }
         
@@ -140,62 +190,17 @@ public class NextBusServiceImpl implements NextBusService {
 
     @Override
     public StopsModel getStops(double latitude, double longitude) {
-        List<Pair<Route.Stop,Route>> nearbyStops = getNearbyStops(latitude, longitude, NEARBY);
+        while (!isLoaded.get()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ie) {}
+        }
+        
+        List<Pair<Stop,Route>> nearbyStops = getNearbyStops(latitude, longitude, NEARBY);
         PredictionList predictionList = getPredictionListsForRoutes(nearbyStops);
         
-        StopsModel stopsModel = new StopsModel();
-        
-        // Create a map between routes and it's stops
-        Map<Route,List<Route.Stop>> routeMap = new HashMap<Route,List<Route.Stop>>();
-        for (Pair<Route.Stop,Route> stop : nearbyStops) {
-            if (routeMap.get(stop.getRight()) == null) {
-                routeMap.put(stop.getRight(), new ArrayList<Route.Stop>());
-            }
-            routeMap.get(stop.getRight()).add(stop.getLeft());
-        }
-        
-        stopsModel.routes = new ArrayList<StopsModel.Route>();
-        for (Route route : routeMap.keySet()) {
-            StopsModel.Route modelRoute = new StopsModel.Route();
-            modelRoute.routeName = route.title;
-            
-            modelRoute.stops = new ArrayList<StopsModel.Stop>();
-            for (Route.Stop stop : routeMap.get(route)) {
-                StopsModel.Stop modelStop = new StopsModel.Stop();
-                modelStop.stopName = stop.title;
-                modelStop.predictions = new ArrayList<Integer>();
-                
-                modelStop.predictions.addAll(getPredictionsForStop(predictionList,route,stop));
-                
-                modelRoute.stops.add(modelStop);
-            }
-            stopsModel.routes.add(modelRoute);
-        }
-                
-        
+        StopsModel stopsModel = new StopsModel(nearbyStops, predictionList);
+
         return stopsModel;
     }
-
-    private List<Integer> getPredictionsForStop(PredictionList predictionList, Route route, Stop stop) {
-        List<Integer> minuteList = new ArrayList<Integer>();
-        
-        if (predictionList.predictions == null)
-            return minuteList;
-        
-        for (Predictions predictions : predictionList.predictions) {
-            if (predictions.direction != null && predictions.direction.prediction != null) {
-                for (Prediction prediction : predictions.direction.prediction) {
-                        if (predictions.routeTag.equals(route.tag) &&
-                                predictions.stopTag.equals(stop.tag)) {
-                            minuteList.add(prediction.minutes);
-                        }
-                }
-            }
-        }
-        
-        Collections.sort(minuteList);
-        
-        return minuteList;
-    }
-    
 }
