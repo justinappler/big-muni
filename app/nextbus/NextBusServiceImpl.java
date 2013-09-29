@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.xml.bind.JAXB;
 
-import models.StopsModel;
 import nextbus.api.PredictionList;
 import nextbus.api.Route;
 import nextbus.api.RouteList;
@@ -47,8 +46,6 @@ public class NextBusServiceImpl implements NextBusService {
     private static final String ROUTE_CONFIG_COMMAND = "routeConfig";
     private static final String PREDICT_MULTIPLE_STOPS_COMMAND = "predictionsForMultiStops";
     private static final String SF_MUNI_AGENCY = "sf-muni";
-
-    private static final double NEARBY = 0.25; // .45KM or ~2 City Blocks
     
     static {
         getInstance();
@@ -145,16 +142,14 @@ public class NextBusServiceImpl implements NextBusService {
         }
     }
 
-    /**
-     * Given a location and distance (or radius), returns
-     * all nearby stops and their corresponding routes
-     * 
-     * @param latitude
-     * @param longitude
-     * @param distance radius in kilometers
-     * @return
-     */
+    @Override
     public List<Pair<Stop,Route>> getNearbyStops(double latitude, double longitude, double distance) {
+        while (!isLoaded.get()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ie) {}
+        }
+        
         List<Pair<Stop,Route>> stops = new ArrayList<Pair<Stop,Route>>();
         for (Route route : allRoutes) {
             for (Stop stop : route.stops) {
@@ -166,11 +161,7 @@ public class NextBusServiceImpl implements NextBusService {
         return stops;
     }
 
-    /**
-     * Gets a list of predictions for a list of stops
-     * @param stops
-     * @return
-     */
+    @Override
     public PredictionList getPredictionListsForRoutes(List<Pair<Stop,Route>> stops) {
         WSRequestHolder predictionRequest = WS
                 .url(NEXTBUS_PUBLIC_XML_FEED)
@@ -186,21 +177,5 @@ public class NextBusServiceImpl implements NextBusService {
         PredictionList predictionList = JAXB.unmarshal(new StringReader(predictionXml), PredictionList.class);
 
         return predictionList;
-    }
-
-    @Override
-    public StopsModel getStops(double latitude, double longitude) {
-        while (!isLoaded.get()) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ie) {}
-        }
-        
-        List<Pair<Stop,Route>> nearbyStops = getNearbyStops(latitude, longitude, NEARBY);
-        PredictionList predictionList = getPredictionListsForRoutes(nearbyStops);
-        
-        StopsModel stopsModel = new StopsModel(nearbyStops, predictionList);
-
-        return stopsModel;
     }
 }

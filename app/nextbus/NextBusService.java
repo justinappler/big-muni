@@ -1,6 +1,12 @@
 package nextbus;
 
-import models.StopsModel;
+import java.util.List;
+
+import nextbus.api.PredictionList;
+import nextbus.api.Route;
+import nextbus.api.Stop;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * NextBus service interface
@@ -9,11 +15,21 @@ import models.StopsModel;
 public interface NextBusService {
 
     /**
-     * Returns the nearby stops and their predictions
+     * Gets a list of predictions for a list of stops
+     * @param stops
+     * @return
+     */
+    public PredictionList getPredictionListsForRoutes(List<Pair<Stop, Route>> stops);
+
+    /**
+     * Given a location and distance (or radius), returns
+     * all nearby stops and their corresponding routes
      * 
      * @param latitude
      * @param longitude
-     * @return nearby stops and their predictions
+     * @param distance radius in kilometers
+     * @return
      */
-    public StopsModel getStops(double latitude, double longitude);
+    public List<Pair<Stop, Route>> getNearbyStops(double latitude, double longitude,
+            double distance);
 }

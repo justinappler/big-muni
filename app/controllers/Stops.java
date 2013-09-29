@@ -1,8 +1,6 @@
 package controllers;
 
 import models.StopsModel;
-import nextbus.NextBusService;
-import nextbus.NextBusServiceImpl;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -12,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Stops controller
  * 
- * Serves the stops JSON api
+ * Serves the stops JSON API
  * 
  * @author justinappler
  */
@@ -37,13 +35,10 @@ public class Stops extends Controller {
             } catch (Exception e) {
                 return badRequest("Invalid value for lat/lon parameters");
             }
-            
-            NextBusService service = NextBusServiceImpl.getInstance();
 
-            StopsModel stopsModel = service.getStops(lat, lon);
+            StopsModel stopsModel = StopsModel.getNearby(lat, lon);
             
             return ok(new ObjectMapper().valueToTree(stopsModel));
         }
     }
-
 }

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nextbus.NextBusService;
+import nextbus.NextBusServiceImpl;
 import nextbus.api.PredictionList;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -15,6 +17,24 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class StopsModel {
     
+    private static final double NEARBY = 0.25; // .45KM or ~2 City Blocks
+    
+    public static StopsModel getNearby(double lat, double lon) {
+        NextBusService service = NextBusServiceImpl.getInstance();
+        
+        List<Pair<nextbus.api.Stop, nextbus.api.Route>> nearbyStops = service.getNearbyStops(lat, lon, NEARBY);
+        PredictionList predictionList = service.getPredictionListsForRoutes(nearbyStops);
+        
+        return new StopsModel(nearbyStops, predictionList);
+    }
+    
+    /**
+     * Constructor for the stops service model.  Takes a list of nearby stops and
+     * a matching set of predictions
+     * 
+     * @param nearbyStops
+     * @param predictionList
+     */
     public StopsModel(List<Pair<nextbus.api.Stop, nextbus.api.Route>> nearbyStops, PredictionList predictionList) {
         
         // Create a map between routes and it's stops
