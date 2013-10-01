@@ -60,11 +60,8 @@ $(function() {
    // Call the JSON stops service
    function updateStops(latitude, longitude) {
       $.ajax({
-         type: "POST",
          url: "/stops",
-         contentType: 'application/json',
-         dataType: 'json',
-         data: JSON.stringify({lat: latitude, lon: longitude})
+         data: {lat: latitude, lon: longitude}
        }).done(addStops);
    }
    

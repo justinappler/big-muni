@@ -1,10 +1,11 @@
 package controllers;
 
+import java.util.Map;
+
 import models.StopsModel;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -23,15 +24,15 @@ public class Stops extends Controller {
      * @return a list of nearby stops and theirs predictions
      */
     public static Result stops() {
-        JsonNode json = request().body().asJson();
+        Map<String, String[]> queryString = request().queryString();
         
-        if (json == null) {
+        if (queryString == null) {
             return badRequest("Expecting lat and lon parameters");
         } else {
             double lat, lon;
             try {
-                lat = json.get("lat").asDouble();
-                lon = json.get("lon").asDouble();
+                lat = Double.parseDouble(queryString.get("lat")[0]);
+                lon = Double.parseDouble(queryString.get("lon")[0]);
             } catch (Exception e) {
                 return badRequest("Invalid value for lat/lon parameters");
             }
