@@ -11,13 +11,12 @@ Uses the following tools:
 * [jQuery][jquery], for client-side AJAX requests and DOM Manipulation
 
 ## To-do
-* Auto-refresh
 * Explicit location (as opposed to just using the HTML Geolocation API)
-* Tests
-* Javadocs
-* Asynchronous Route Loading
-* Asynchronous Prediction (don't block on prediction API call, aka using the Play Framework correctly)
+* Client error case handling (API is down, etc)
+* Tests (Unit for parsing/Geo calc)
+* Server-side Async Prediction (don't block/wait on prediction API call)
 * More robust Geolocation with error checking 
+* Chromecast Support
 
 ## Usage
 With the [Play 2.2 Framework][play2] installed,

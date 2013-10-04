@@ -2,9 +2,9 @@ package nextbus;
 
 import java.util.List;
 
-import nextbus.api.PredictionList;
-import nextbus.api.Route;
-import nextbus.api.Stop;
+import nextbus.models.PredictionList;
+import nextbus.models.Route;
+import nextbus.models.Stop;
 
 import org.apache.commons.lang3.tuple.Pair;
 

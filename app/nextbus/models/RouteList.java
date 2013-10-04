@@ -1,4 +1,4 @@
-package nextbus.api;
+package nextbus.models;
 
 import java.util.List;
 

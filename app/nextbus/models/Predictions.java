@@ -1,6 +1,4 @@
-package nextbus.api;
-
-import java.util.List;
+package nextbus.models;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,10 +6,19 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Direction {
+public class Predictions {
     @XmlAttribute
-    public String title;
+    public String stopTitle;
 
+    @XmlAttribute
+    public String stopTag;
+    
+    @XmlAttribute
+    public String routeTag;
+    
+    @XmlAttribute
+    public String routeTitle;
+    
     @XmlElement
-    public List<Prediction> prediction;
+    public Direction direction;
 }

@@ -1,4 +1,4 @@
-package nextbus;
+package nextbus.impl;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -8,11 +8,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.xml.bind.JAXB;
 
-import nextbus.api.PredictionList;
-import nextbus.api.Route;
-import nextbus.api.RouteList;
-import nextbus.api.Stop;
+import nextbus.NextBusService;
 import nextbus.cache.RouteCache;
+import nextbus.models.PredictionList;
+import nextbus.models.Route;
+import nextbus.models.RouteList;
+import nextbus.models.Stop;
 
 import org.apache.commons.lang3.tuple.Pair;
 

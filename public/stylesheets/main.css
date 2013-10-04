@@ -130,8 +130,14 @@ h3 {
    color: #CCC;
 }
 
-#header h1 {
-   text-align: right;
+#header .last-updated-label {
+   font-size: 16px;
+   margin-left: 10px;
+   margin-top: 18px;
+}
+
+#header .title {
+   float: right;
    font-size: 36px;
    font-weight: bold;
    padding: 8px;

@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import nextbus.NextBusService;
-import nextbus.NextBusServiceImpl;
-import nextbus.api.PredictionList;
+import nextbus.impl.NextBusServiceImpl;
+import nextbus.models.PredictionList;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -17,12 +17,12 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class StopsModel {
     
-    private static final double NEARBY = 0.25; // .45KM or ~2 City Blocks
+    private static final double NEARBY = 0.25; // .25KM or ~2 City Blocks
     
     public static StopsModel getNearby(double lat, double lon) {
         NextBusService service = NextBusServiceImpl.getInstance();
         
-        List<Pair<nextbus.api.Stop, nextbus.api.Route>> nearbyStops = service.getNearbyStops(lat, lon, NEARBY);
+        List<Pair<nextbus.models.Stop, nextbus.models.Route>> nearbyStops = service.getNearbyStops(lat, lon, NEARBY);
         PredictionList predictionList = service.getPredictionListsForRoutes(nearbyStops);
         
         return new StopsModel(nearbyStops, predictionList);
@@ -35,25 +35,25 @@ public class StopsModel {
      * @param nearbyStops
      * @param predictionList
      */
-    public StopsModel(List<Pair<nextbus.api.Stop, nextbus.api.Route>> nearbyStops, PredictionList predictionList) {
+    public StopsModel(List<Pair<nextbus.models.Stop, nextbus.models.Route>> nearbyStops, PredictionList predictionList) {
         
         // Create a map between routes and it's stops
-        Map<nextbus.api.Route, List<nextbus.api.Stop>> routeMap = new HashMap<nextbus.api.Route,List<nextbus.api.Stop>>();
-        for (Pair<nextbus.api.Stop, nextbus.api.Route> stop : nearbyStops) {
+        Map<nextbus.models.Route, List<nextbus.models.Stop>> routeMap = new HashMap<nextbus.models.Route,List<nextbus.models.Stop>>();
+        for (Pair<nextbus.models.Stop, nextbus.models.Route> stop : nearbyStops) {
             if (routeMap.get(stop.getRight()) == null) {
-                routeMap.put(stop.getRight(), new ArrayList<nextbus.api.Stop>());
+                routeMap.put(stop.getRight(), new ArrayList<nextbus.models.Stop>());
             }
             routeMap.get(stop.getRight()).add(stop.getLeft());
         }
         
         routes = new ArrayList<StopsModel.Route>();
         
-        for (nextbus.api.Route route : routeMap.keySet()) {
+        for (nextbus.models.Route route : routeMap.keySet()) {
             StopsModel.Route modelRoute = new StopsModel.Route();
             modelRoute.routeName = route.title;
             
             List<StopsModel.Stop> modelStops = new ArrayList<StopsModel.Stop>();
-            for (nextbus.api.Stop stop : routeMap.get(route)) {
+            for (nextbus.models.Stop stop : routeMap.get(route)) {
                 StopsModel.Stop modelStop = new StopsModel.Stop();
                 modelStop.stopName = stop.title;
                 modelStop.predictions = new ArrayList<Integer>();

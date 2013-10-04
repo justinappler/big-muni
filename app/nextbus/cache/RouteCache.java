@@ -11,7 +11,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXB;
 
-import nextbus.api.Route;
+import nextbus.models.Route;
 
 /**
  * Cache for routes retrieved from the NextBus API.
